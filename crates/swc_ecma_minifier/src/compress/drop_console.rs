@@ -51,7 +51,7 @@ impl VisitMut for DropConsole {
                                 if obj.sym != *"console" {
                                     return;
                                 }
-                                println!("-prop.sym {:?}", prop.sym);
+
                                 match &*prop.sym {
                                     "assert" | "clear" | "count" | "countReset" | "debug"
                                     | "dir" | "dirxml" | "error" | "group" | "groupCollapsed"
