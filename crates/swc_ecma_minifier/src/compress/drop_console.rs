@@ -51,9 +51,12 @@ impl VisitMut for DropConsole {
                                 if obj.sym != *"console" {
                                     return;
                                 }
-
+                                println!("-prop.sym {:?}", prop.sym);
                                 match &*prop.sym {
-                                    "log" | "info" => {}
+                                    "assert" | "clear" | "count" | "countReset" | "debug"
+                                    | "dir" | "dirxml" | "error" | "group" | "groupCollapsed"
+                                    | "groupEnd" | "info" | "log" | "table" | "time"
+                                    | "timeEnd" | "timeLog" | "trace" | "warn" => {}
                                     _ => return,
                                 }
                             }
@@ -63,7 +66,21 @@ impl VisitMut for DropConsole {
                         // Sioplifier will remove side-effect-free items.
                         *n = Expr::Seq(SeqExpr {
                             span: *span,
-                            exprs: take(args).into_iter().map(|arg| arg.expr).collect(),
+                            exprs: take(args)
+                                .into_iter()
+                                .map(|_arg| -> Box<Expr> {
+                                    return Expr::Unary(UnaryExpr {
+                                        span: *span,
+                                        op: op!("void"),
+                                        arg: Expr::Lit(Lit::Num(Number {
+                                            value: 0.0,
+                                            span: *span,
+                                        }))
+                                        .into(),
+                                    })
+                                    .into();
+                                })
+                                .collect(),
                         })
                     }
                     _ => {}
